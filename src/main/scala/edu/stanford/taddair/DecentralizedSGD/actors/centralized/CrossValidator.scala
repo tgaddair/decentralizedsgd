@@ -53,7 +53,9 @@ class CrossValidator(modelId: Int,
       trainingData = dataShard._1,
       activation = activation,
       activationDerivative = activationDerivative,
-      parameterShards = parameterShardActors)))
+      parameterShards = parameterShardActors,
+      outputActor = context.actorOf(Props(new OutputActor))
+    )))
   }
   log.info(s"model ${modelId}: ${dataShards.size} data shards initiated!")
 

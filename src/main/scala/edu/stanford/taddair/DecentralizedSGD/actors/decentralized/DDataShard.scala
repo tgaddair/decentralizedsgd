@@ -36,9 +36,8 @@ class DDataShard(shardId: Int,
                  activationDerivative: ActivationFunction,
                  numLayers: Int,
                  layerDimensions: Seq[Int],
-                 seed: Int) extends Actor with ActorLogging {
-
-  val outputActor = context.actorOf(Props(new OutputActor))
+                 seed: Int,
+                 outputActor: ActorRef) extends Actor with ActorLogging {
 
   //parameter shard corresponding to each layer
   val trainingDataIterator = trainingData.toIterator
@@ -56,7 +55,7 @@ class DDataShard(shardId: Int,
       activationFunction = activation,
       activationFunctionDerivative = activationDerivative,
       parentLayer = if (l > 0) Some(layers(l - 1)) else None, //parent layer actor
-      outputAct = if (l == numLayers - 1) Some(outputActor) else None,
+      outputAct = Some(outputActor),
       initialWeight = NeuralNetworkOps.randomMatrixSeeded(layerDimensions(l + 1), layerDimensions(l) + 1, seed)
     )))
 

@@ -2,11 +2,13 @@ package edu.stanford.taddair.DecentralizedSGD.actors.centralized
 
 import akka.actor.{Actor, ActorLogging}
 import breeze.linalg.DenseVector
-import edu.stanford.taddair.DecentralizedSGD.actors.centralized.OutputActor.Output
+import edu.stanford.taddair.DecentralizedSGD.actors.centralized.OutputActor.{Output, ParametersUpdated}
 
 object OutputActor {
 
   case class Output(replicaId: Int, target: DenseVector[Double], output: DenseVector[Double])
+
+  case class ParametersUpdated(count: Int)
 
 }
 
@@ -15,15 +17,18 @@ object OutputActor {
  */
 class OutputActor extends Actor with ActorLogging {
 
-  var latestOutputs: Map[Int, DenseVector[Double]] = Map.empty
+  var updates = 0;
 
   def receive = {
 
     case Output(replica, target, output) => {
 
-      latestOutputs += (replica -> output)
+//      log.info(s"replica id ${replica}, output: ${output}, target ${target}")
+    }
 
-      log.info(s"replica id ${replica}, output: ${output}, target ${target}")
+    case ParametersUpdated(count) => {
+      updates += count;
+      log.info(s"parameters updated: ${updates}")
     }
 
 

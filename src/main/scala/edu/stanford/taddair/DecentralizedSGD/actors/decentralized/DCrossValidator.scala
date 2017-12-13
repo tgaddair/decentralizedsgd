@@ -1,6 +1,7 @@
 package edu.stanford.taddair.DecentralizedSGD.actors.decentralized
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import edu.stanford.taddair.DecentralizedSGD.actors.centralized.OutputActor
 import edu.stanford.taddair.DecentralizedSGD.actors.decentralized.DCrossValidator.{FinishedTraining, StartTraining}
 import edu.stanford.taddair.DecentralizedSGD.actors.decentralized.DDataShard.ReadyToProcess
 import edu.stanford.taddair.DecentralizedSGD.actors.decentralized.DMaster.ValidationDone
@@ -47,7 +48,9 @@ class DCrossValidator(modelId: Int,
       activationDerivative = activationDerivative,
       numLayers = numLayers - 1,
       layerDimensions = layerDimensions: Seq[Int],
-      seed = scala.util.Random.nextInt())))
+      seed = scala.util.Random.nextInt(),
+      outputActor = context.actorOf(Props(new OutputActor))
+    )))
   }
   log.info(s"model ${modelId}: ${dataShards.size} data shards initiated!")
 

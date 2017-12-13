@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorRef}
 import breeze.linalg.{DenseMatrix, DenseVector}
 import edu.stanford.taddair.DecentralizedSGD.actors.centralized.DataShard.{FetchParameters, ReadyToProcess}
 import edu.stanford.taddair.DecentralizedSGD.actors.centralized.Layer._
-import edu.stanford.taddair.DecentralizedSGD.actors.centralized.OutputActor.Output
+import edu.stanford.taddair.DecentralizedSGD.actors.centralized.OutputActor.{Output, ParametersUpdated}
 import edu.stanford.taddair.DecentralizedSGD.actors.centralized.ParameterShard.{LatestParameters, ParameterRequest}
 import edu.stanford.taddair.DecentralizedSGD.model.NeuralNetworkOps._
 import edu.stanford.taddair.DecentralizedSGD.model.Types.{Activation, ActivationFunction, Delta, LayerWeight}
@@ -140,6 +140,7 @@ class Layer(replicaId: Int,
     */
     case LatestParameters(weights) => {
       latestWeights = weights
+      outputAct.get ! ParametersUpdated(weights.size)
       context.parent ! DoneFetchingParameters(layerId, squaredError, n)
       context.unbecome()
     }

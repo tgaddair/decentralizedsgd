@@ -44,7 +44,7 @@ class CentralizedXOR extends Actor with ActorLogging {
     layerDimensions = Seq(2, 2, 1),
     activation = (x: DenseVector[Double]) => x.map(el => sigmoid(el)),
     activationDerivative = (x: DenseVector[Double]) => x.map(el => sigmoid(el) * (1 - sigmoid(el))),
-    learningRates = Seq(0.3, 0.5, 0.7))
+    learningRates = Seq(0.2, 0.3, 0.5, 0.7, 0.8))
   )
   )
 

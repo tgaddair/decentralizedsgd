@@ -2,7 +2,7 @@ package edu.stanford.taddair.DecentralizedSGD.actors.decentralized
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import breeze.linalg.{DenseMatrix, DenseVector}
-import edu.stanford.taddair.DecentralizedSGD.actors.centralized.OutputActor.Output
+import edu.stanford.taddair.DecentralizedSGD.actors.centralized.OutputActor.{Output, ParametersUpdated}
 import edu.stanford.taddair.DecentralizedSGD.actors.decentralized.DDataShard.{FetchParameters, LayerParameterUpdate, ReadyToProcess}
 import edu.stanford.taddair.DecentralizedSGD.actors.decentralized.DLayer._
 import edu.stanford.taddair.DecentralizedSGD.model.NeuralNetworkOps._
@@ -196,17 +196,20 @@ class DLayer(replicaId: Int,
     case ParameterUpdate(weights) => {
       log.info(s"${replicaId} ${layerId}: parameter update")
 
+      var n = 0
       val newWeights = latestWeights.copy
       for ((row, colWeight) <- weights) {
         for ((col, g) <- colWeight) {
           val v = latestWeights(row, col) + g * learningRate
           newWeights.update(row, col, v)
+          n += 1
 //          log.info(s"${replicaId} ${layerId}: updated ${g} -> ${v}")
         }
       }
       latestWeights = newWeights
 
-//      context.parent ! DoneFetchingParameters(layerId, squaredError, n)
+      outputAct.get ! ParametersUpdated(n)
+      //      context.parent ! DoneFetchingParameters(layerId, squaredError, n)
 //      context.unbecome()
     }
   }

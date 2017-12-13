@@ -28,11 +28,10 @@ class DataShard(shardId: Int,
                 trainingData: Seq[Example],
                 activation: ActivationFunction,
                 activationDerivative: ActivationFunction,
-                parameterShards: Seq[ActorRef]) extends Actor {
+                parameterShards: Seq[ActorRef],
+                outputActor: ActorRef) extends Actor {
 
   val numLayers = parameterShards.size
-
-  val outputActor = context.actorOf(Props(new OutputActor))
 
   //parameter shard corresponding to each layer
   val trainingDataIterator = trainingData.toIterator
@@ -49,7 +48,7 @@ class DataShard(shardId: Int,
       activationFunctionDerivative = activationDerivative,
       parentLayer = if (l > 0) Some(layers(l - 1)) else None, //parent layer actor
       parameterShardId = parameterShards(l),
-      outputAct = if (l == numLayers - 1) Some(outputActor) else None)) //layer needs access to its parameter shard to read from and update
+      outputAct = Some(outputActor))) //layer needs access to its parameter shard to read from and update
     )
 
     //after each layer actor is created, let the previous layer know that its child is ready

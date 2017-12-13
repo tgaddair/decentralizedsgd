@@ -45,7 +45,7 @@ class DecentralizedXOR extends Actor with ActorLogging {
     activation = (x: DenseVector[Double]) => x.map(el => sigmoid(el)),
     activationDerivative = (x: DenseVector[Double]) => x.map(el => sigmoid(el) * (1 - sigmoid(el))),
     tau = 1,
-    learningRates = Seq(0.2, 0.5, 0.8))
+    learningRates = Seq(0.2, 0.3, 0.5, 0.7, 0.8))
   )
   )
 
